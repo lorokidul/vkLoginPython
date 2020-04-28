@@ -5,15 +5,41 @@
     <title>vk login</title>
 </head>
 <body>
-<center>
-    <div style="background-image: url('{{pic}}'); width: 100px; height: 100px"></div></center>
-<center><h2>friends: {{friends}}</h2></center>
 
- <div class="container">
-    <form action = "http://localhost:5000/logout_button" method = "get">
-       <center> <input type="submit" value="Log out" ></center>
+<center><div style="background-image: url('{{pic}}'); width: 100px; height: 100px;" class="center"></div></center>
+<div style="text-align: center;">{{friends}} friends</div>
+
+
+<form action = "/search" method = "POST">
+
+
+         <div  class="form-group"; style="text-align:center;">
+        <label>First name: </label>
+        <input class="form-control" type="text" name="friend">
+          <input type="submit" value="Search" >
+         </div>
+</form>
+    {% if ((friend_list|length > 0) and (friend_name is not none)) %}
+
+        <div class = "friends-list">
+
+<ul class = "list" style="text-align: center;list-style: none">
+    {% for friend in friend_list%}
+        <li style="text-align: center">{{ friend}}</li>
+    {% endfor %}
+</ul>
+        </div>
+{% else %}
+         <div style="text-align: center;"><label>Friend with first name {{ friend_name}} not found.</label></div>
+
+{%  endif %}
+
+ <div class="container"  style="text-align: center;">
+     <form action = "http://localhost:5000/logout_button" method = "get">
+       <div style="text-align: center;"> <input type="submit" value="Log out" ></div>
     </form>
  </div>
+
 
 
 </body>

@@ -80,3 +80,17 @@ input:focus {
     display: block;
     margin-top: 12px;
 }
+
+.form-group{
+    margin-top: 40px;
+    display: flex;
+}
+.list{
+    justify-content: center;
+    text-align: center;
+}
+
+.list> li {
+    text-align: center;
+    font-size: 10px;
+}
