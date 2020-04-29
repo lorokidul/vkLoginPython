@@ -5,41 +5,45 @@
     <title>vk login</title>
 </head>
 <body>
+{% if  pic!=none %}
 
-<center><div style="background-image: url('{{pic}}'); width: 100px; height: 100px;" class="center"></div></center>
-<div style="text-align: center;">{{friends}} friends</div>
+    <center>
+        <div style="background-image: url('{{ pic }}'); width: 100px; height: 100px;" class="center"></div>
+    </center>
+{% endif %}
+<div style="text-align: center;margin-top: 20px">{{ friends }} friends</div>
 
 
-<form action = "/search" method = "POST">
+<form action="/search" method="POST">
 
 
-         <div  class="form-group"; style="text-align:center;">
+    <div class="form-group" ; style="text-align:center; margin-top: 20px">
         <label>First name: </label>
         <input class="form-control" type="text" name="friend">
-          <input type="submit" value="Search" >
-         </div>
+        <input type="submit" value="Search">
+    </div>
 </form>
-    {% if ((friend_list|length > 0) and (friend_name is not none)) %}
+{% if  query_counter>0 and  friend_list|length==0 %}
+    <div style="text-align: center; margin-top: 20px"><label>No friends with first name "{{ friend_name }}".</label>
+    </div>
 
-        <div class = "friends-list">
-
-<ul class = "list" style="text-align: center;list-style: none">
-    {% for friend in friend_list%}
-        <li style="text-align: center">{{ friend}}</li>
-    {% endfor %}
-</ul>
-        </div>
 {% else %}
-         <div style="text-align: center;"><label>Friend with first name {{ friend_name}} not found.</label></div>
 
-{%  endif %}
+    <div class="friends-list">
 
- <div class="container"  style="text-align: center;">
-     <form action = "http://localhost:5000/logout_button" method = "get">
-       <div style="text-align: center;"> <input type="submit" value="Log out" ></div>
+        <ul class="list" style="text-align: center;list-style: none; margin-top: 20px">
+            {% for friend in friend_list %}
+                <li style="text-align:center">{{ friend }}</li>
+            {% endfor %}
+
+    </div>
+{% endif %}
+
+<div class="container" style="text-align: center; margin-top: 20px">
+    <form action="http://localhost:5000/logout_button" method="get">
+        <div style="text-align: center;"><input type="submit" value="Log out"></div>
     </form>
- </div>
-
+</div>
 
 
 </body>
