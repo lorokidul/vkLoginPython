@@ -6,6 +6,8 @@ import secrets
 import urllib.error
 import urllib.parse
 import urllib.request
+
+import requests
 from flask import Flask, render_template, request, redirect, session
 
 app = Flask(__name__, static_url_path='/static')
@@ -14,6 +16,7 @@ app.secret_key = secrets.token_hex(16)
 APP_ID = 7414616
 REDIRECT_URI = 'http://127.0.0.1:5000/o/oauth2/auth'
 CLIENT_SECRET = '6kMClHK2fRQXJSHM0rHr'
+API_VERSION = '5.103'
 
 
 
@@ -38,12 +41,14 @@ def home():
 
     friends = get_friends_list(user_id, token)
     n_friends = friends['count']
+    response = requests.get('https://api.vk.com/method/photos.get', params={'owner_id': user_id,
+                                           'album_id':'profile',
+                                           'rev':'1',
+                                           'count':'1',
+                                           'access_token':token,
+                                            'v':API_VERSION})
 
-    album_url = get_album_url(user_id, "profile", 1, 1, token)
-    connection = urllib.request.urlopen(album_url)
-    data = connection.read().decode()
-
-    photo_json = json.loads(data)
+    photo_json = response.json()
     session["pic_url"] = None
     if len(photo_json['response']['items']) > 0:
         user_pic_url = re.sub('//////', '//',
@@ -55,8 +60,6 @@ def home():
 
     return render_template('friends.html', pic=session["pic_url"], friends=session["n_friends"],
                            query_counter=session["queries"])
-
-
 
 
 
@@ -142,19 +145,6 @@ def get_friends_url(user_id, token):
     fields = '&fields=city'
     version_string = "&v=5.103"
     return base + user_id + fields + token + version_string
-
-
-def get_album_url(owner_id, album_id, chronological, maxN, access_token):
-    base = 'https://api.vk.com/method/photos.get?'
-    owner_string = 'owner_id=' + str(owner_id)
-    album_string = '&album_id=' + str(album_id)
-    rev_string = '&rev=' + str(chronological)
-    count_string = '&count=' + str(maxN)
-    access_token_string = '&access_token=' + str(access_token)
-    photo_sizes_string = "&photo_sizes=0"
-    version_string = "&v=5.103"
-    url = base + owner_string + album_string + rev_string + count_string + photo_sizes_string + access_token_string + version_string
-    return url
 
 
 if __name__ == "__main__":
