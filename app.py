@@ -46,9 +46,7 @@ def home():
     photo_json = response.json()
     session["pic_url"] = None
     if len(photo_json['response']['items']) > 0:
-        user_pic_url = re.sub('//////', '//',
-                              re.sub('\\\/', '///', photo_json['response']['items'][0]['sizes'][0]['url']))
-        session["pic_url"] = user_pic_url
+        session["pic_url"] = photo_json['response']['items'][0]['sizes'][0]['url']
 
     session["n_friends"] = n_friends
     session["queries"] = 0
@@ -64,6 +62,7 @@ def button():
                  params={'client_id':APP_ID,
                          'redirect_uri':REDIRECT_URI,
                          'scope':'friends',
+                         'revoke':'1',
                          'v':API_VERSION})
     return redirect(r.url)
 
