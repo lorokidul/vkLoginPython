@@ -1,4 +1,4 @@
-# importing flask module
+
 
 import json
 import re
@@ -6,17 +6,20 @@ import secrets
 import urllib.error
 import urllib.parse
 import urllib.request
-
 from flask import Flask, render_template, request, redirect, session
 
-# from flask_login import logout_user
-
 app = Flask(__name__, static_url_path='/static')
+
+app.secret_key = secrets.token_hex(16)
+APP_ID = 7414616
+REDIRECT_URI = 'http://127.0.0.1:5000/o/oauth2/auth'
+CLIENT_SECRET = '6kMClHK2fRQXJSHM0rHr'
+
 
 
 @app.route('/')
 def index():
-    if session.keys().__contains__('user_id'):
+    if 'user_id' in session.keys():
         return home()
 
     return render_template('button.html')
@@ -40,7 +43,7 @@ def home():
     connection = urllib.request.urlopen(album_url)
     data = connection.read().decode()
 
-    photo_json = eval(data)
+    photo_json = json.loads(data)
     session["pic_url"] = None
     if len(photo_json['response']['items']) > 0:
         user_pic_url = re.sub('//////', '//',
@@ -54,10 +57,7 @@ def home():
                            query_counter=session["queries"])
 
 
-app.secret_key = secrets.token_hex(16)
-app_id = 7414616
-redirect_uri = 'http://127.0.0.1:5000/o/oauth2/auth'
-client_secret = '6kMClHK2fRQXJSHM0rHr'
+
 
 
 def get_url(client_id, redirect_uri):
@@ -78,7 +78,7 @@ def connect(url):
 
 @app.route('/login_button', methods=["GET", "POST"])
 def button():
-    url = get_url(app_id, redirect_uri)
+    url = get_url(APP_ID, REDIRECT_URI)
     return redirect(url)
 
 
@@ -94,9 +94,9 @@ def logout_button():
 def get_code():
     try:
         code = request.args.get('code')
-        token_url = get_access_token_url(app_id, client_secret, redirect_uri, code)
+        token_url = get_access_token_url(APP_ID, CLIENT_SECRET, REDIRECT_URI, code)
         response = connect(token_url)
-        parsed = eval(response)
+        parsed = json.loads(response)
 
         token = parsed['access_token']
         user_id = parsed['user_id']
