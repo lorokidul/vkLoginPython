@@ -1,4 +1,5 @@
 import secrets
+
 import requests
 from flask import Flask, render_template, request, redirect, session
 
@@ -21,10 +22,10 @@ def index():
 
 def get_friends_list(user_id, token):
     response = requests.get('https://api.vk.com/method/friends.get',
-                             params={'access_token':token,
-                                     'user_id':user_id,
-                                     'fields':'city',
-                                     'v':API_VERSION})
+                            params={'access_token': token,
+                                    'user_id': user_id,
+                                    'fields': 'city',
+                                    'v': API_VERSION})
     response_json = response.json()
     return response_json["response"]
 
@@ -36,11 +37,11 @@ def home():
     friends = get_friends_list(user_id, token)
     n_friends = friends['count']
     response = requests.get('https://api.vk.com/method/photos.get', params={'owner_id': user_id,
-                                           'album_id':'profile',
-                                           'rev':'1',
-                                           'count':'1',
-                                           'access_token':token,
-                                            'v':API_VERSION})
+                                                                            'album_id': 'profile',
+                                                                            'rev': '1',
+                                                                            'count': '1',
+                                                                            'access_token': token,
+                                                                            'v': API_VERSION})
 
     photo_json = response.json()
     session["pic_url"] = None
@@ -54,15 +55,14 @@ def home():
                            query_counter=session["queries"])
 
 
-
 @app.route('/login_button', methods=["GET", "POST"])
 def button():
     r = requests.get('https://oauth.vk.com/authorize',
-                 params={'client_id':APP_ID,
-                         'redirect_uri':REDIRECT_URI,
-                         'scope':'friends',
-                         'revoke':'1',
-                         'v':API_VERSION})
+                     params={'client_id': APP_ID,
+                             'redirect_uri': REDIRECT_URI,
+                             'scope': 'friends',
+                             'revoke': '1',
+                             'v': API_VERSION})
     return redirect(r.url)
 
 
@@ -80,10 +80,10 @@ def get_code():
         code = request.args.get('code')
 
         response = requests.get('https://oauth.vk.com/access_token',
-                                params={'client_id':APP_ID,
-                                        'client_secret':CLIENT_SECRET,
-                                        'redirect_uri':REDIRECT_URI,
-                                        'code':code})
+                                params={'client_id': APP_ID,
+                                        'client_secret': CLIENT_SECRET,
+                                        'redirect_uri': REDIRECT_URI,
+                                        'code': code})
 
         response_json = response.json()
         token = response_json['access_token']
@@ -111,6 +111,7 @@ def submit(name="unknown"):
 
     return render_template('friends.html', pic=session["pic_url"], friends=session["n_friends"],
                            friend_list=session["friends"], friend_name=name, query_counter=session["queries"])
+
 
 if __name__ == "__main__":
     app.run()
